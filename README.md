@@ -103,6 +103,6 @@ The model that was fine-tuned in the previous step was deployed to a sagemaker e
 
 ![image](https://github.com/hualcosa/AWS-Machine-Learning-Engineer-NanoDegree-Project3/blob/main/images/active_endpoints.png)
 
-<h3 align="center">succesfully deployed endpoint</h3>
+<h3 align="center">querying endpoint</h3>
 
 ![image](https://github.com/hualcosa/AWS-Machine-Learning-Engineer-NanoDegree-Project3/assets/46836901/bb89d325-b22c-4eb6-b865-4fdbe4cb84ba)
