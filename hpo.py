@@ -9,6 +9,8 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 import os
 import argparse
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True # using this setting to solve a problem with truncated images during training
 
 def train(model, train_loader, valid_loader, epochs, loss_criterion, optimizer, device):
     '''
@@ -88,13 +90,15 @@ def net():
     num_inputs = model.fc.in_features
     # create a new output layer that will output the class probabilities
     model.fc = nn.Linear(num_inputs, num_classes)
+    
+    return model
 
 def create_data_loaders(data, batch_size):
     '''
     Utility function that builds dataloaders for each dataset version
     '''
 
-    dataloaders = {version: torch.utils.DataLoader(data[version], batch_size, shuffle=True) for version in ['train', 'valid', 'test']}
+    dataloaders = {version: torch.utils.data.DataLoader(data[version], batch_size, shuffle=True) for version in ['train', 'valid', 'test']}
     return dataloaders
 
 def main(args):
@@ -111,10 +115,10 @@ def main(args):
     loss_criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.fc.parameters(), args.lr)
     
-
+    # storing number of epochs in a variable 
+    epochs = args.epochs
 
     # importing training data
-    
     # defining data augumentation and transformations for each dataset version
     data_transforms = {
         'train': transforms.Compose([
@@ -139,7 +143,7 @@ def main(args):
         ])
     }
 
-    datasets = {version: datasets.ImageFolder(os.path.join(args.data_dir, version), transform=data_transforms[version]) for version in ['train', 'valid', 'test']}
+    datasets = {version: torchvision.datasets.ImageFolder(os.path.join(args.data_dir, version), transform=data_transforms[version]) for version in ['train', 'valid', 'test']}
     
     # creating data loaders
     dataloaders = create_data_loaders(datasets , args.batch_size)
@@ -153,7 +157,8 @@ def main(args):
     '''
     # getting gpu info
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model=train(model, train_loader, valid_loader, loss_criterion, optimizer, device)
+    
+    train(model, train_loader, valid_loader, epochs, loss_criterion, optimizer, device)
     
     '''
     TODO: Test the model to see its accuracy
